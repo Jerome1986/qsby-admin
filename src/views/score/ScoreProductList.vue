@@ -13,6 +13,7 @@ import {
   deleteScoreProduct,
   getScoreCategories,
 } from '@/api/scoreProduct'
+import { getStoreList } from '@/api/store'
 
 /** 商品列表数据 */
 const tableData = ref<ScoreProduct[]>([])
@@ -29,10 +30,13 @@ const pageSize = ref(10)
 const searchForm = ref({
   name: '',
   categoryId: 'all',
+  storeId: 'all',
 })
 
 /** 分类下拉选项 */
 const categoryOptions = ref<ScoreProductCategory[]>([])
+/** 门店下拉选项 */
+const storeOptions = ref<{ _id: string; name: string }[]>([])
 
 const userStore = useUserStore()
 
@@ -58,6 +62,16 @@ const loadCategories = async () => {
   }
 }
 
+/** 加载门店列表（用于下拉） */
+const loadStores = async () => {
+  try {
+    const res = await getStoreList(1, 200)
+    storeOptions.value = (res.data?.list ?? []).map((s) => ({ _id: s._id, name: s.name }))
+  } catch {
+    storeOptions.value = []
+  }
+}
+
 /** 点击搜索 */
 const handleSearch = () => {
   currentPage.value = 1
@@ -66,7 +80,7 @@ const handleSearch = () => {
 
 /** 重置搜索 */
 const handleReset = () => {
-  searchForm.value = { name: '', categoryId: 'all' }
+  searchForm.value = { name: '', categoryId: 'all', storeId: 'all' }
   currentPage.value = 1
   getList(currentPage.value, pageSize.value)
 }
@@ -78,6 +92,7 @@ const getList = async (pageNum: number, pageSize: number) => {
     const res = await getScoreProductList(pageNum, pageSize, {
       name: searchForm.value.name || undefined,
       categoryId: searchForm.value.categoryId !== 'all' ? searchForm.value.categoryId : undefined,
+      storeId: searchForm.value.storeId !== 'all' ? searchForm.value.storeId : undefined,
     })
     tableData.value = res.data?.list ?? []
     total.value = res.data?.total ?? 0
@@ -110,10 +125,13 @@ const dialogTitle = ref('新增商品')
 const formData = ref<Partial<ScoreProduct>>({
   name: '',
   category: '',
+  categoryName: '',
+  storeId: '',
+  storeName: '',
   cover: '',
   images: [],
   scorePrice: 0,
-  status: 'on',
+  status: 'active',
 })
 
 /** 封面上传成功 */
@@ -160,17 +178,31 @@ const handleImagesRemove = (file: UploadFile) => {
   }
 }
 
+/** 分类变更时同步 categoryName */
+const handleCategoryChange = (categoryId: string) => {
+  formData.value!.categoryName = categoryId ? getCategoryName(categoryId) : ''
+}
+
+/** 门店变更时同步 storeName */
+const handleStoreChange = (storeId: string) => {
+  formData.value!.storeName = storeId ? getStoreName(storeId) : ''
+}
+
 /** 打开新增弹窗 */
 const handleAdd = () => {
   dialogTitle.value = '新增商品'
-  const firstCategoryId = categoryOptions.value[0]?._id ?? ''
+  const firstCategory = categoryOptions.value[0]
+  const firstStore = storeOptions.value[0]
   formData.value = {
     name: '',
-    category: firstCategoryId,
+    category: firstCategory?._id ?? '',
+    categoryName: firstCategory?.name ?? '',
+    storeId: firstStore?._id ?? '',
+    storeName: firstStore?.name ?? '',
     cover: '',
     images: [],
     scorePrice: 0,
-    status: 'on',
+    status: 'active',
   }
   coverFileList.value = []
   imagesFileList.value = []
@@ -202,7 +234,7 @@ const handleDelete = (row: ScoreProduct) => {
         // 接口占位
       }
     })
-    .catch(() => {})
+    .catch(() => { })
 }
 
 /** 提交表单（新增/编辑） */
@@ -219,10 +251,13 @@ const handleConfirm = async () => {
     const payload = {
       name: formData.value.name,
       category: formData.value.category,
+      categoryName: formData.value.categoryName ?? getCategoryName(formData.value.category ?? ''),
+      storeId: formData.value.storeId || '',
+      storeName: formData.value.storeName ?? getStoreName(formData.value.storeId),
       cover: formData.value.cover || '',
       images: formData.value.images ?? [],
       scorePrice: formData.value.scorePrice ?? 0,
-      status: formData.value.status || 'on',
+      status: formData.value.status || 'active',
     }
     if (formData.value._id) {
       await scoreProductUpdate(formData.value._id, payload)
@@ -244,8 +279,16 @@ const getCategoryName = (categoryId: string) => {
   return item?.name ?? categoryId
 }
 
+/** 根据门店ID获取名称 */
+const getStoreName = (storeId?: string) => {
+  if (!storeId) return ''
+  const item = storeOptions.value.find((s) => s._id === storeId)
+  return item?.name ?? ''
+}
+
 onMounted(() => {
   loadCategories()
+  loadStores()
   getList(currentPage.value, pageSize.value)
 })
 </script>
@@ -262,6 +305,12 @@ onMounted(() => {
             <el-select v-model="searchForm.categoryId" placeholder="全部" clearable style="width: 120px">
               <el-option label="全部" value="all" />
               <el-option v-for="opt in categoryOptions" :key="opt._id" :label="opt.name" :value="opt._id" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="门店">
+            <el-select v-model="searchForm.storeId" placeholder="全部" clearable style="width: 160px">
+              <el-option label="全部" value="all" />
+              <el-option v-for="s in storeOptions" :key="s._id" :label="s.name" :value="s._id" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -291,13 +340,16 @@ onMounted(() => {
         <el-table-column label="分类" min-width="100" align="center">
           <template #default="{ row }">{{ getCategoryName(row.category) || row.categoryName || '-' }}</template>
         </el-table-column>
+        <el-table-column prop="storeName" label="门店" min-width="140" align="center" show-overflow-tooltip>
+          <template #default="{ row }">{{ row.storeName || getStoreName(row.storeId) || '-' }}</template>
+        </el-table-column>
         <el-table-column prop="scorePrice" label="积分价格" min-width="100" align="center">
           <template #default="{ row }">{{ row.scorePrice ?? 0 }} 积分</template>
         </el-table-column>
         <el-table-column prop="status" label="状态" min-width="80" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'on' ? 'success' : 'danger'" size="small">
-              {{ row.status === 'on' ? '上架' : '下架' }}
+            <el-tag :type="row.status === 'active' ? 'success' : 'danger'" size="small">
+              {{ row.status === 'active' ? '上架' : '下架' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -320,8 +372,13 @@ onMounted(() => {
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="560px" destroy-on-close>
       <el-form :model="formData" label-width="100px">
         <el-form-item label="分类">
-          <el-select v-model="formData.category" placeholder="请选择分类" style="width: 100%">
+          <el-select v-model="formData.category" placeholder="请选择分类" style="width: 100%" @change="handleCategoryChange">
             <el-option v-for="opt in categoryOptions" :key="opt._id" :label="opt.name" :value="opt._id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="关联门店">
+          <el-select v-model="formData.storeId" placeholder="请选择门店" style="width: 100%" @change="handleStoreChange">
+            <el-option v-for="s in storeOptions" :key="s._id" :label="s.name" :value="s._id" />
           </el-select>
         </el-form-item>
         <el-form-item label="商品名称">
@@ -334,20 +391,24 @@ onMounted(() => {
           <el-upload v-model:file-list="coverFileList" :action="UPLOAD_URL" :headers="uploadHeaders"
             list-type="picture-card" :limit="1" accept="image/*" :on-success="handleCoverSuccess"
             :on-error="handleCoverError" :on-remove="handleCoverRemove">
-            <el-icon><Plus /></el-icon>
+            <el-icon>
+              <Plus />
+            </el-icon>
           </el-upload>
         </el-form-item>
         <el-form-item label="详情图">
           <el-upload v-model:file-list="imagesFileList" :action="UPLOAD_URL" :headers="uploadHeaders"
-            list-type="picture-card" accept="image/*" :on-success="handleImagesSuccess"
-            :on-error="handleImagesError" :on-remove="handleImagesRemove">
-            <el-icon><Plus /></el-icon>
+            list-type="picture-card" accept="image/*" :on-success="handleImagesSuccess" :on-error="handleImagesError"
+            :on-remove="handleImagesRemove">
+            <el-icon>
+              <Plus />
+            </el-icon>
           </el-upload>
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="formData.status">
-            <el-radio value="on">上架</el-radio>
-            <el-radio value="off">下架</el-radio>
+            <el-radio value="active">上架</el-radio>
+            <el-radio value="disabled">下架</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>

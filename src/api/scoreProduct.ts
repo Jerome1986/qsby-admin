@@ -61,6 +61,8 @@ export const deleteScoreCategory = (id: string) => {
 export interface ScoreProductListParams {
   name?: string
   categoryId?: string
+  /** 门店ID，传 'all' 或不传表示不限 */
+  storeId?: string
 }
 
 /** 获取商品列表 */
@@ -72,6 +74,7 @@ export const getScoreProductList = (
   const query: Record<string, string | number> = { pageNum, pageSize }
   if (params?.name?.trim()) query.name = params.name.trim()
   if (params?.categoryId && params.categoryId !== 'all') query.categoryId = params.categoryId
+  if (params?.storeId && params.storeId !== 'all') query.storeId = params.storeId
   return request<ScoreProductPage>({
     method: 'GET',
     url: '/scoreProduct/findAllList',
@@ -79,8 +82,21 @@ export const getScoreProductList = (
   })
 }
 
+/** 新增/更新商品参数（与 ScoreProduct 可编辑字段一致） */
+export interface ScoreProductAddParams {
+  name: string
+  category: string
+  categoryName: string
+  storeId?: string
+  storeName?: string
+  cover: string
+  images: string[]
+  scorePrice: number
+  status: 'active' | 'disabled'
+}
+
 /** 新增商品 */
-export const scoreProductAdd = (data: Record<string, unknown>) => {
+export const scoreProductAdd = (data: ScoreProductAddParams) => {
   return request<AddResult>({
     method: 'POST',
     url: '/scoreProduct/add',
@@ -89,7 +105,7 @@ export const scoreProductAdd = (data: Record<string, unknown>) => {
 }
 
 /** 更新商品 */
-export const scoreProductUpdate = (id: string, data: Record<string, unknown>) => {
+export const scoreProductUpdate = (id: string, data: Partial<ScoreProductAddParams>) => {
   return request({
     method: 'POST',
     url: '/scoreProduct/update',
