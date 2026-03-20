@@ -212,6 +212,12 @@ onMounted(() => {
           <template #default="{ row }">{{ getCategoryName(row.categoryId) }}</template>
         </el-table-column>
         <el-table-column prop="address" label="门店地址" min-width="180" align="center" show-overflow-tooltip />
+        <el-table-column prop="phone" label="门店电话" min-width="120" align="center" show-overflow-tooltip>
+          <template #default="{ row }">{{ row.phone || '-' }}</template>
+        </el-table-column>
+        <el-table-column prop="managerPhone" label="店长电话" min-width="120" align="center" show-overflow-tooltip>
+          <template #default="{ row }">{{ row.managerPhone || '-' }}</template>
+        </el-table-column>
         <el-table-column prop="createdAt" label="创建时间" min-width="170" align="center">
           <template #default="{ row }">{{ formatTimestamp(row.createdAt, 2) }}</template>
         </el-table-column>

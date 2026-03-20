@@ -61,6 +61,18 @@ export const deleteTripType = (tripTypeId: string) => {
 }
 
 /**
+ * 删除行程
+ * @param tripId - 行程ID
+ */
+export const deleteTrip = (tripId: string) => {
+  return request<DelResult>({
+    method: 'POST',
+    url: '/trip/del',
+    data: { tripId },
+  })
+}
+
+/**
  * 获取所有行程列表
  * @param pageNum - 页码
  * @param pageSize - 每页条数

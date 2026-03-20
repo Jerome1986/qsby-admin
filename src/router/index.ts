@@ -62,6 +62,16 @@ const router = createRouter({
             { path: 'product', component: () => import('@/views/store/ProductManage.vue') },
           ],
         },
+        // 积分管理
+        {
+          path: '/score',
+          component: () => import('@/views/score/Score.vue'),
+          redirect: '/score/category',
+          children: [
+            { path: 'category', component: () => import('@/views/score/ScoreCategory.vue') },
+            { path: 'list', component: () => import('@/views/score/ScoreProductList.vue') },
+          ],
+        },
         // 项目管理
         {
           path: '/project',

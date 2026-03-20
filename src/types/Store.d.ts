@@ -55,6 +55,8 @@ export interface StoreItem {
   address: string
   /** 门店电话 */
   phone?: string
+  /** 店长手机号码 */
+  managerPhone?: string
   /** 纬度 */
   latitude?: number
   /** 经度 */

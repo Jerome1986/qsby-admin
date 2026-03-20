@@ -48,6 +48,7 @@ const formData = ref<Partial<StoreItem>>({
   name: '',
   address: '',
   phone: '',
+  managerPhone: '',
   latitude: undefined,
   longitude: undefined,
   description: '',
@@ -79,6 +80,7 @@ const resetForm = () => {
     name: '',
     address: '',
     phone: '',
+    managerPhone: '',
     latitude: undefined,
     longitude: undefined,
     description: '',
@@ -135,11 +137,14 @@ const handleConfirm = async () => {
       name: formData.value.name,
       address: formData.value.address || '',
       phone: formData.value.phone || '',
+      managerPhone: formData.value.managerPhone || '',
       latitude: formData.value.latitude,
       longitude: formData.value.longitude,
       description: formData.value.description || '',
     }
     if (formData.value._id) {
+      console.log(payload)
+
       await storeUpdate(formData.value._id, payload)
     } else {
       await storeAdd(payload)
@@ -207,13 +212,12 @@ watch(
       <el-form-item label="门店电话">
         <el-input v-model="formData.phone" placeholder="请输入门店电话" clearable />
       </el-form-item>
+      <el-form-item label="设置店长">
+        <el-input v-model="formData.managerPhone" placeholder="请输入店长手机号码" clearable />
+      </el-form-item>
       <el-form-item label="地图选点" class="map-form-item">
-        <StoreMapWithSearch
-          :longitude="formData.longitude"
-          :latitude="formData.latitude"
-          :initial-keyword="formData.name || formData.address"
-          @select="onLocationSelect"
-        />
+        <StoreMapWithSearch :longitude="formData.longitude" :latitude="formData.latitude"
+          :initial-keyword="formData.name || formData.address" @select="onLocationSelect" />
       </el-form-item>
       <el-form-item label="门店介绍">
         <el-input v-model="formData.description" type="textarea" :rows="4" placeholder="请输入门店介绍" />

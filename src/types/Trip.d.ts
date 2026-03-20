@@ -31,6 +31,8 @@ export interface TripTypeListPageResult {
 
 // 发布行程表单数据类型
 export interface PublicFormData {
+  /** 行程ID */
+  _id?: string
   /** 发布者昵称 */
   publisherName
   /** 发布者头像 */

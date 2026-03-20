@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import type { PublicFormData, TripTypeItem } from '@/types/Trip'
 import { formatTimestamp } from '@/utils/formatUtil'
-import { getTripTypes, tripListFindAll } from '@/api/trip'
+import { getTripTypes, tripListFindAll, deleteTrip } from '@/api/trip'
 import { statusMap, statusTagType } from '@/views/trip/dataConfig.ts'
 
 // ======================== 基础数据 ========================
@@ -78,6 +79,31 @@ const handleDetail = (row: PublicFormData) => {
   detailVisible.value = true
 }
 
+/** 删除行程 */
+const handleDelete = (row: PublicFormData) => {
+  const id = row._id
+  if (!id) {
+    ElMessage.warning('无法获取行程ID')
+    return
+  }
+  ElMessageBox.confirm(`确认删除行程「${row.title}」吗？`, '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(async () => {
+      try {
+        await deleteTrip(id)
+        ElMessage.success('删除成功')
+        await getTripList(currentPage.value, pageSize.value)
+      } catch (error) {
+        console.error(error)
+        // 接口异常
+      }
+    })
+    .catch(() => { })
+}
+
 // ======================== 生命周期 ========================
 
 onMounted(() => {
@@ -150,9 +176,10 @@ onMounted(() => {
         <el-table-column prop="createdAt" label="创建时间" min-width="170" align="center">
           <template #default="{ row }">{{ formatTimestamp(row.createdAt, 2) }}</template>
         </el-table-column>
-        <el-table-column label="操作" min-width="100" align="center">
+        <el-table-column label="操作" min-width="140" align="center">
           <template #default="{ row }">
             <el-button type="primary" link size="small" @click="handleDetail(row)">详情</el-button>
+            <el-button type="danger" link size="small" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

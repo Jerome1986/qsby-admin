@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HomeFilled, User, Flag, Location, Setting, List, Folder, Shop } from '@element-plus/icons-vue'
+import { HomeFilled, User, Flag, Location, Setting, List, Folder, Shop, Coin } from '@element-plus/icons-vue'
 </script>
 
 <template>
@@ -78,6 +78,18 @@ import { HomeFilled, User, Flag, Location, Setting, List, Folder, Shop } from '@
             <el-menu-item index="/store/list">门店列表</el-menu-item>
             <el-menu-item index="/store/product-type">产品类型</el-menu-item>
             <el-menu-item index="/store/product">产品管理</el-menu-item>
+          </el-menu-item-group>
+        </el-sub-menu>
+        <el-sub-menu index="/score">
+          <template #title>
+            <el-icon>
+              <Coin />
+            </el-icon>
+            <span>积分管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="/score/category">分类列表</el-menu-item>
+            <el-menu-item index="/score/list">商品列表</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
         <el-sub-menu index="/project">
