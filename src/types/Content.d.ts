@@ -76,20 +76,10 @@ export interface BookingNoteContent {
   updatedAt?: Date
 }
 
-/** 内容页类型（品牌/门店/周边 结构相同） */
-export type ContentPageCode = 'brand' | 'store_intro' | 'surrounding'
-
-/** 内容页展示配置 */
-export const CONTENT_PAGE_MAP: Record<ContentPageCode, string> = {
-  brand: '品牌介绍',
-  store_intro: '门店介绍',
-  surrounding: '周边推荐',
-}
-
 /** 内容页通用结构（封面+标题+开篇+章节+风采图） */
 export interface ContentPageData {
   _id?: string
-  code: ContentPageCode
+  code: string
   cover: string
   heroTitle: string
   heroSubtitle: string

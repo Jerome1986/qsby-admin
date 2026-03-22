@@ -75,9 +75,6 @@ const storeLocation = computed(() => {
             :init-delay="350"
           />
         </el-descriptions-item>
-        <el-descriptions-item label="门店介绍" :span="2">
-          <div class="desc-text">{{ detailData.description || '-' }}</div>
-        </el-descriptions-item>
       </el-descriptions>
       <div class="detail-cover" v-if="detailData.cover">
         <p class="detail-cover-title">门店封面</p>
@@ -97,11 +94,6 @@ const storeLocation = computed(() => {
     color: #606266;
     margin-bottom: 8px;
   }
-}
-
-.desc-text {
-  white-space: pre-wrap;
-  word-break: break-word;
 }
 
 .store-detail-descriptions :deep(.el-descriptions__label) {

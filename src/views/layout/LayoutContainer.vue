@@ -77,7 +77,6 @@ import { HomeFilled, User, Flag, Location, Setting, List, Folder, Shop, Coin, Do
             <el-menu-item index="/store/category">门店分类</el-menu-item>
             <el-menu-item index="/store/list">门店列表</el-menu-item>
             <el-menu-item index="/store/product-type">产品类型</el-menu-item>
-            <el-menu-item index="/store/product">产品管理</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
         <el-sub-menu index="/score">
@@ -101,8 +100,6 @@ import { HomeFilled, User, Flag, Location, Setting, List, Folder, Shop, Coin, Do
           </template>
           <el-menu-item-group>
             <el-menu-item index="/content/brand">品牌介绍</el-menu-item>
-            <el-menu-item index="/content/store-intro">门店介绍</el-menu-item>
-            <el-menu-item index="/content/surrounding">周边推荐</el-menu-item>
             <el-menu-item index="/content/rights">权益说明</el-menu-item>
             <el-menu-item index="/content/tips">温馨提示</el-menu-item>
             <el-menu-item index="/content/booking-note">预约须知</el-menu-item>

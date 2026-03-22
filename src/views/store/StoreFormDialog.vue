@@ -51,7 +51,6 @@ const formData = ref<Partial<StoreItem>>({
   managerPhone: '',
   latitude: undefined,
   longitude: undefined,
-  description: '',
 })
 
 /** 封面图文件列表 */
@@ -83,7 +82,6 @@ const resetForm = () => {
     managerPhone: '',
     latitude: undefined,
     longitude: undefined,
-    description: '',
   }
   coverFileList.value = []
 }
@@ -140,11 +138,8 @@ const handleConfirm = async () => {
       managerPhone: formData.value.managerPhone || '',
       latitude: formData.value.latitude,
       longitude: formData.value.longitude,
-      description: formData.value.description || '',
     }
     if (formData.value._id) {
-      console.log(payload)
-
       await storeUpdate(formData.value._id, payload)
     } else {
       await storeAdd(payload)
@@ -218,9 +213,6 @@ watch(
       <el-form-item label="地图选点" class="map-form-item">
         <StoreMapWithSearch :longitude="formData.longitude" :latitude="formData.latitude"
           :initial-keyword="formData.name || formData.address" @select="onLocationSelect" />
-      </el-form-item>
-      <el-form-item label="门店介绍">
-        <el-input v-model="formData.description" type="textarea" :rows="4" placeholder="请输入门店介绍" />
       </el-form-item>
     </el-form>
     <template #footer>

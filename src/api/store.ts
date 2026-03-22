@@ -5,6 +5,8 @@ import type {
   ProductListPageResult,
   ProductTypeListPageResult,
   StoreStatus,
+  StoreContentData,
+  StoreContentBlock,
 } from '@/types/Store'
 import type { AddResult, DelResult, UpdateResult } from '@/types/Gobal'
 
@@ -65,12 +67,7 @@ export const getProductTypes = (pageNum: number, pageSize: number) => {
   })
 }
 
-export const productTypeUpdate = (
-  id: string,
-  name: string,
-  sort: number,
-  status: StoreStatus,
-) => {
+export const productTypeUpdate = (id: string, name: string, sort: number, status: StoreStatus) => {
   return request({
     method: 'POST',
     url: '/store/updateProductType',
@@ -136,6 +133,26 @@ export const deleteStore = (id: string) => {
     method: 'POST',
     url: '/store/del',
     data: { storeId: id },
+  })
+}
+
+// ======================== 门店内容（门店介绍/周边推荐） ========================
+
+/** 获取门店内容 */
+export const getStoreContent = (storeId: string, type: string) => {
+  return request<StoreContentData>({
+    method: 'GET',
+    url: '/store/getContent',
+    params: { storeId, type },
+  })
+}
+
+/** 更新门店内容 */
+export const updateStoreContent = (storeId: string, type: string, blocks: StoreContentBlock[]) => {
+  return request({
+    method: 'POST',
+    url: '/store/updateContent',
+    data: { storeId, type, blocks },
   })
 }
 

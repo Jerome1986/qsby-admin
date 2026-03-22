@@ -61,11 +61,50 @@ export interface StoreItem {
   latitude?: number
   /** 经度 */
   longitude?: number
-  /** 门店介绍 */
-  description: string
+  /** 门店介绍内容ID */
+  storeIntroId?: string
+  /** 周边推荐内容ID */
+  surroundingId?: string
   status?: StoreStatus
-  createdAt?: string
-  updatedAt?: string
+}
+
+/** 门店内容块（文本或图片，按顺序展示） */
+export interface StoreContentBlock {
+  type: 'text' | 'image'
+  content: string
+}
+
+/** 门店内容类型（store-intro 门店介绍 | surrounding 周边推荐） */
+export type StoreContentType = 'store-intro' | 'surrounding'
+
+/** 门店内容（门店介绍/周边推荐）数据库文档 */
+export interface StoreContent {
+  _id?: string
+  storeId: string
+  type: StoreContentType
+  blocks: StoreContentBlock[]
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+/** 获取门店内容 - 请求参数 */
+export interface GetStoreContentParams {
+  storeId: string
+  type: StoreContentType
+}
+
+/** 获取门店内容 - 响应数据 */
+export interface StoreContentData {
+  storeId: string
+  type: StoreContentType
+  blocks: StoreContentBlock[]
+}
+
+/** 更新门店内容 - 请求参数 */
+export interface UpdateStoreContentParams {
+  storeId: string
+  type: StoreContentType
+  blocks: StoreContentBlock[]
 }
 
 export interface StoreListPageResult {

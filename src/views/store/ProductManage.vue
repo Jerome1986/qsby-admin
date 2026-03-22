@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { UploadFile, UploadUserFile } from 'element-plus'
 import type { ProductItem, ProductTypeItem } from '@/types/Store'
+import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores'
 import { formatTimestamp } from '@/utils/formatUtil'
 import {
@@ -14,6 +15,15 @@ import {
   getStoreList,
   getProductTypes,
 } from '@/api/store'
+
+const route = useRoute()
+const router = useRouter()
+
+/** 从门店列表进入时携带的门店信息 */
+const storeId = computed(() => route.query.storeId as string)
+const storeName = computed(() => route.query.storeName as string)
+/** 是否从门店列表进入（有 storeId） */
+const isFromStore = computed(() => !!storeId.value)
 
 /** 产品列表数据 */
 const tableData = ref<ProductItem[]>([])
@@ -81,7 +91,11 @@ const handleSearch = () => {
 
 /** 重置搜索条件 */
 const handleReset = () => {
-  searchForm.value = { name: '', storeId: 'all', productTypeId: 'all' }
+  searchForm.value = {
+    name: '',
+    storeId: isFromStore.value ? storeId.value : 'all',
+    productTypeId: 'all',
+  }
   currentPage.value = 1
   getList(currentPage.value, pageSize.value)
 }
@@ -181,7 +195,7 @@ const handleAdd = () => {
   dialogTitle.value = '新增产品'
   const firstTypeId = productTypeOptions.value[0]?._id ?? ''
   formData.value = {
-    storeId: '',
+    storeId: isFromStore.value ? storeId.value : '',
     prodcutTypeId: firstTypeId,
     name: '',
     price: 0,
@@ -268,22 +282,52 @@ const getProductTypeLabel = (productTypeId: string) => {
   return item?.name ?? productTypeId
 }
 
+/** 返回门店列表 */
+const handleBack = () => {
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/store/list')
+  }
+}
+
+watch(
+  () => storeId.value,
+  (id) => {
+    if (id) {
+      searchForm.value.storeId = id
+      currentPage.value = 1
+      getList(currentPage.value, pageSize.value)
+    }
+  },
+  { immediate: true },
+)
+
 onMounted(() => {
   loadStores()
   loadProductTypes()
+  if (storeId.value) {
+    searchForm.value.storeId = storeId.value
+  }
   getList(currentPage.value, pageSize.value)
 })
 </script>
 
 <template>
   <div class="product-manage">
+    <el-page-header v-if="isFromStore" @back="handleBack" class="page-header">
+      <template #content>
+        <span class="page-title">产品管理</span>
+        <span v-if="storeName" class="store-name-hint">{{ storeName }}</span>
+      </template>
+    </el-page-header>
     <div class="search-toolbar-row">
       <div class="search-card">
         <el-form :model="searchForm" inline @submit.prevent="handleSearch">
           <el-form-item label="产品名称">
             <el-input v-model="searchForm.name" placeholder="如：大床房、双床房" clearable />
           </el-form-item>
-          <el-form-item label="关联门店">
+          <el-form-item v-if="!isFromStore" label="关联门店">
             <el-select v-model="searchForm.storeId" placeholder="全部" clearable style="width: 160px">
               <el-option label="全部" value="all" />
               <el-option v-for="s in storeOptions" :key="s._id" :label="s.name" :value="s._id" />
@@ -419,6 +463,20 @@ onMounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
+
+  .page-header {
+    margin-bottom: 16px;
+  }
+
+  .page-title {
+    font-weight: 600;
+  }
+
+  .store-name-hint {
+    font-size: 12px;
+    color: #909399;
+    margin-left: 12px;
+  }
 
   .search-toolbar-row {
     padding: 20px;

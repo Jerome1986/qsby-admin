@@ -4,6 +4,7 @@ import { Plus, Search } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { StoreItem, StoreCategoryItem } from '@/types/Store'
 import type { CityItem } from '@/types/City'
+import { useRouter } from 'vue-router'
 import { formatTimestamp } from '@/utils/formatUtil'
 import { getStoreList, getStoreCategories, deleteStore } from '@/api/store'
 import StoreFormDialog from './StoreFormDialog.vue'
@@ -11,6 +12,7 @@ import StoreDetailDialog from './StoreDetailDialog.vue'
 import { useCityStore } from '@/stores'
 
 const cityStore = useCityStore()
+const router = useRouter()
 
 /** 仅激活状态的城市，用于下拉选择 */
 const activeCityList = computed(() =>
@@ -154,6 +156,22 @@ const getCategoryName = (categoryId: string) => {
   return cat?.name ?? categoryId
 }
 
+/** 跳转门店介绍/周边推荐设置（type: store-intro | surrounding） */
+const handleContentSetting = (row: StoreItem, type: 'store-intro' | 'surrounding') => {
+  router.push({
+    path: '/store/content-setting',
+    query: { storeId: row._id, storeName: row.name, type },
+  })
+}
+
+/** 跳转商品管理（产品列表） */
+const handleProductManage = (row: StoreItem) => {
+  router.push({
+    path: '/store/product',
+    query: { storeId: row._id, storeName: row.name },
+  })
+}
+
 onMounted(() => {
   cityStore.loadCityList()
   getList(currentPage.value, pageSize.value)
@@ -217,6 +235,21 @@ onMounted(() => {
         </el-table-column>
         <el-table-column prop="managerPhone" label="店长电话" min-width="120" align="center" show-overflow-tooltip>
           <template #default="{ row }">{{ row.managerPhone || '-' }}</template>
+        </el-table-column>
+        <el-table-column label="门店介绍" min-width="90" align="center">
+          <template #default="{ row }">
+            <el-button type="primary" link size="small" @click="handleContentSetting(row, 'store-intro')">设置</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="周边推荐" min-width="90" align="center">
+          <template #default="{ row }">
+            <el-button type="primary" link size="small" @click="handleContentSetting(row, 'surrounding')">设置</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="商品管理" min-width="90" align="center">
+          <template #default="{ row }">
+            <el-button type="primary" link size="small" @click="handleProductManage(row)">查看</el-button>
+          </template>
         </el-table-column>
         <el-table-column prop="createdAt" label="创建时间" min-width="170" align="center">
           <template #default="{ row }">{{ formatTimestamp(row.createdAt, 2) }}</template>

@@ -2,8 +2,6 @@ import { request } from '@/utils/request.ts'
 import type {
   BrandContent,
   BookingNoteContent,
-  ContentPageData,
-  ContentPageCode,
   RightsBenefitsItem,
   RightsType,
   TipsItem,
@@ -90,44 +88,3 @@ export const updateBrandContent = (data: Omit<BrandContent, '_id' | 'createdAt' 
   })
 }
 
-// ======================== 门店介绍（结构与品牌介绍相同） ========================
-
-/** 获取门店介绍 */
-export const getStoreIntro = () => {
-  return request<ContentPageData>({
-    method: 'GET',
-    url: '/content/storeIntro',
-  })
-}
-
-/** 更新门店介绍 */
-export const updateStoreIntro = (
-  data: Omit<ContentPageData, '_id' | 'createdAt' | 'updatedAt'>,
-) => {
-  return request<AddResult>({
-    method: 'POST',
-    url: '/content/updateStoreIntro',
-    data,
-  })
-}
-
-// ======================== 周边推荐（结构与品牌介绍相同） ========================
-
-/** 获取周边推荐 */
-export const getSurrounding = () => {
-  return request<ContentPageData>({
-    method: 'GET',
-    url: '/content/surrounding',
-  })
-}
-
-/** 更新周边推荐 */
-export const updateSurrounding = (
-  data: Omit<ContentPageData, '_id' | 'createdAt' | 'updatedAt'>,
-) => {
-  return request<AddResult>({
-    method: 'POST',
-    url: '/content/updateSurrounding',
-    data,
-  })
-}

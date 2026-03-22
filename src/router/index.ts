@@ -59,6 +59,7 @@ const router = createRouter({
             { path: 'category', component: () => import('@/views/store/StoreCategory.vue') },
             { path: 'product-type', component: () => import('@/views/store/StoreProductType.vue') },
             { path: 'list', component: () => import('@/views/store/StoreList.vue') },
+            { path: 'content-setting', component: () => import('@/views/store/StoreContentSetting.vue') },
             { path: 'product', component: () => import('@/views/store/ProductManage.vue') },
           ],
         },
@@ -91,8 +92,6 @@ const router = createRouter({
           redirect: '/content/brand',
           children: [
             { path: 'brand', component: () => import('@/views/content/BrandManage.vue') },
-            { path: 'store-intro', component: () => import('@/views/content/StoreIntroManage.vue') },
-            { path: 'surrounding', component: () => import('@/views/content/SurroundingManage.vue') },
             { path: 'rights', component: () => import('@/views/content/RightsManage.vue') },
             { path: 'tips', component: () => import('@/views/content/TipsManage.vue') },
             { path: 'booking-note', component: () => import('@/views/content/BookingNoteManage.vue') },
