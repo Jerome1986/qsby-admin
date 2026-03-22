@@ -84,6 +84,20 @@ const router = createRouter({
             { path: 'list', component: () => import('@/views/project/ProjectList.vue') },
           ],
         },
+        // 内容管理
+        {
+          path: '/content',
+          component: () => import('@/views/content/Content.vue'),
+          redirect: '/content/brand',
+          children: [
+            { path: 'brand', component: () => import('@/views/content/BrandManage.vue') },
+            { path: 'store-intro', component: () => import('@/views/content/StoreIntroManage.vue') },
+            { path: 'surrounding', component: () => import('@/views/content/SurroundingManage.vue') },
+            { path: 'rights', component: () => import('@/views/content/RightsManage.vue') },
+            { path: 'tips', component: () => import('@/views/content/TipsManage.vue') },
+            { path: 'booking-note', component: () => import('@/views/content/BookingNoteManage.vue') },
+          ],
+        },
         // 系统管理
         {
           path: '/system',
