@@ -102,7 +102,6 @@ import { HomeFilled, User, Flag, Location, Setting, List, Folder, Shop, Coin, Do
             <el-menu-item index="/content/brand">品牌介绍</el-menu-item>
             <el-menu-item index="/content/rights">权益说明</el-menu-item>
             <el-menu-item index="/content/tips">温馨提示</el-menu-item>
-            <el-menu-item index="/content/booking-note">预约须知</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
         <el-sub-menu index="/project">

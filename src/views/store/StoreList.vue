@@ -164,6 +164,14 @@ const handleContentSetting = (row: StoreItem, type: 'store-intro' | 'surrounding
   })
 }
 
+/** 跳转预约须知设置 */
+const handleBookingNoteSetting = (row: StoreItem) => {
+  router.push({
+    path: '/store/booking-note',
+    query: { storeId: row._id, storeName: row.name },
+  })
+}
+
 /** 跳转商品管理（产品列表） */
 const handleProductManage = (row: StoreItem) => {
   router.push({
@@ -244,6 +252,11 @@ onMounted(() => {
         <el-table-column label="周边推荐" min-width="90" align="center">
           <template #default="{ row }">
             <el-button type="primary" link size="small" @click="handleContentSetting(row, 'surrounding')">设置</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="预约须知" min-width="90" align="center">
+          <template #default="{ row }">
+            <el-button type="primary" link size="small" @click="handleBookingNoteSetting(row)">设置</el-button>
           </template>
         </el-table-column>
         <el-table-column label="商品管理" min-width="90" align="center">

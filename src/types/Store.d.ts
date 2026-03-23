@@ -128,6 +128,8 @@ export interface ProductItem {
   prodcutTypeName: string
   /** 产品名称，如：大床房、双床房 */
   name: string
+  /** 标签说明 */
+  tag?: string
   /** 价格 */
   price: number
   /** 主理人佣金/折扣 固定值 */

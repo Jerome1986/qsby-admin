@@ -137,6 +137,7 @@ const formData = ref<Partial<ProductItem>>({
   storeId: '',
   prodcutTypeId: '',
   name: '',
+  tag: '',
   price: 0,
   commission: 0,
   cover: '',
@@ -198,6 +199,7 @@ const handleAdd = () => {
     storeId: isFromStore.value ? storeId.value : '',
     prodcutTypeId: firstTypeId,
     name: '',
+    tag: '',
     price: 0,
     commission: 0,
     cover: '',
@@ -254,6 +256,7 @@ const handleConfirm = async () => {
       storeId: formData.value.storeId,
       productTypeId: formData.value.prodcutTypeId || '',
       name: formData.value.name,
+      tag: formData.value.tag || '',
       price: formData.value.price ?? 0,
       commission: formData.value.commission ?? 0,
       cover: formData.value.cover || '',
@@ -363,6 +366,9 @@ onMounted(() => {
           </template>
         </el-table-column>
         <el-table-column prop="name" label="产品名称" min-width="120" align="center" show-overflow-tooltip />
+        <el-table-column prop="tag" label="标签说明" min-width="100" align="center" show-overflow-tooltip>
+          <template #default="{ row }">{{ row.tag || '-' }}</template>
+        </el-table-column>
         <el-table-column label="产品类型" min-width="100" align="center">
           <template #default="{ row }">{{ getProductTypeLabel(row.prodcutTypeId) }}</template>
         </el-table-column>
@@ -411,6 +417,9 @@ onMounted(() => {
         </el-form-item>
         <el-form-item label="产品名称">
           <el-input v-model="formData.name" placeholder="如：大床房、双床房、豪华套房" clearable />
+        </el-form-item>
+        <el-form-item label="标签说明">
+          <el-input v-model="formData.tag" placeholder="请输入标签说明" clearable />
         </el-form-item>
         <el-form-item label="价格">
           <el-input-number v-model="formData.price" :min="0" :precision="2" style="width: 100%" />

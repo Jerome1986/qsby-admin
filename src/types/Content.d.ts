@@ -62,10 +62,11 @@ export const TIPS_TYPE_MAP: Record<TipsType, string> = {
   project: '有趣的项目温馨提示',
 }
 
-/** 预约须知单项（标题+内容） */
+/** 预约须知单项（标题+内容条目数组） */
 export interface BookingNoteItem {
   title: string
-  content: string
+  /** 内容条目，每条通过「插入」添加 */
+  content: string[]
 }
 
 /** 预约须知内容 */

@@ -13,7 +13,6 @@ import {
   deleteScoreProduct,
   getScoreCategories,
 } from '@/api/scoreProduct'
-import { getStoreList } from '@/api/store'
 
 /** 商品列表数据 */
 const tableData = ref<ScoreProduct[]>([])
@@ -30,13 +29,10 @@ const pageSize = ref(10)
 const searchForm = ref({
   name: '',
   categoryId: 'all',
-  storeId: 'all',
 })
 
 /** 分类下拉选项 */
 const categoryOptions = ref<ScoreProductCategory[]>([])
-/** 门店下拉选项 */
-const storeOptions = ref<{ _id: string; name: string }[]>([])
 
 const userStore = useUserStore()
 
@@ -62,16 +58,6 @@ const loadCategories = async () => {
   }
 }
 
-/** 加载门店列表（用于下拉） */
-const loadStores = async () => {
-  try {
-    const res = await getStoreList(1, 200)
-    storeOptions.value = (res.data?.list ?? []).map((s) => ({ _id: s._id, name: s.name }))
-  } catch {
-    storeOptions.value = []
-  }
-}
-
 /** 点击搜索 */
 const handleSearch = () => {
   currentPage.value = 1
@@ -80,7 +66,7 @@ const handleSearch = () => {
 
 /** 重置搜索 */
 const handleReset = () => {
-  searchForm.value = { name: '', categoryId: 'all', storeId: 'all' }
+  searchForm.value = { name: '', categoryId: 'all' }
   currentPage.value = 1
   getList(currentPage.value, pageSize.value)
 }
@@ -92,7 +78,6 @@ const getList = async (pageNum: number, pageSize: number) => {
     const res = await getScoreProductList(pageNum, pageSize, {
       name: searchForm.value.name || undefined,
       categoryId: searchForm.value.categoryId !== 'all' ? searchForm.value.categoryId : undefined,
-      storeId: searchForm.value.storeId !== 'all' ? searchForm.value.storeId : undefined,
     })
     tableData.value = res.data?.list ?? []
     total.value = res.data?.total ?? 0
@@ -126,8 +111,6 @@ const formData = ref<Partial<ScoreProduct>>({
   name: '',
   category: '',
   categoryName: '',
-  storeId: '',
-  storeName: '',
   cover: '',
   images: [],
   scorePrice: 0,
@@ -183,22 +166,14 @@ const handleCategoryChange = (categoryId: string) => {
   formData.value!.categoryName = categoryId ? getCategoryName(categoryId) : ''
 }
 
-/** 门店变更时同步 storeName */
-const handleStoreChange = (storeId: string) => {
-  formData.value!.storeName = storeId ? getStoreName(storeId) : ''
-}
-
 /** 打开新增弹窗 */
 const handleAdd = () => {
   dialogTitle.value = '新增商品'
   const firstCategory = categoryOptions.value[0]
-  const firstStore = storeOptions.value[0]
   formData.value = {
     name: '',
     category: firstCategory?._id ?? '',
     categoryName: firstCategory?.name ?? '',
-    storeId: firstStore?._id ?? '',
-    storeName: firstStore?.name ?? '',
     cover: '',
     images: [],
     scorePrice: 0,
@@ -252,8 +227,6 @@ const handleConfirm = async () => {
       name: formData.value.name,
       category: formData.value.category,
       categoryName: formData.value.categoryName ?? getCategoryName(formData.value.category ?? ''),
-      storeId: formData.value.storeId || '',
-      storeName: formData.value.storeName ?? getStoreName(formData.value.storeId),
       cover: formData.value.cover || '',
       images: formData.value.images ?? [],
       scorePrice: formData.value.scorePrice ?? 0,
@@ -279,16 +252,8 @@ const getCategoryName = (categoryId: string) => {
   return item?.name ?? categoryId
 }
 
-/** 根据门店ID获取名称 */
-const getStoreName = (storeId?: string) => {
-  if (!storeId) return ''
-  const item = storeOptions.value.find((s) => s._id === storeId)
-  return item?.name ?? ''
-}
-
 onMounted(() => {
   loadCategories()
-  loadStores()
   getList(currentPage.value, pageSize.value)
 })
 </script>
@@ -305,12 +270,6 @@ onMounted(() => {
             <el-select v-model="searchForm.categoryId" placeholder="全部" clearable style="width: 120px">
               <el-option label="全部" value="all" />
               <el-option v-for="opt in categoryOptions" :key="opt._id" :label="opt.name" :value="opt._id" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="门店">
-            <el-select v-model="searchForm.storeId" placeholder="全部" clearable style="width: 160px">
-              <el-option label="全部" value="all" />
-              <el-option v-for="s in storeOptions" :key="s._id" :label="s.name" :value="s._id" />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -339,9 +298,6 @@ onMounted(() => {
         <el-table-column prop="name" label="商品名称" min-width="140" align="center" show-overflow-tooltip />
         <el-table-column label="分类" min-width="100" align="center">
           <template #default="{ row }">{{ getCategoryName(row.category) || row.categoryName || '-' }}</template>
-        </el-table-column>
-        <el-table-column prop="storeName" label="门店" min-width="140" align="center" show-overflow-tooltip>
-          <template #default="{ row }">{{ row.storeName || getStoreName(row.storeId) || '-' }}</template>
         </el-table-column>
         <el-table-column prop="scorePrice" label="积分价格" min-width="100" align="center">
           <template #default="{ row }">{{ row.scorePrice ?? 0 }} 积分</template>
@@ -374,11 +330,6 @@ onMounted(() => {
         <el-form-item label="分类">
           <el-select v-model="formData.category" placeholder="请选择分类" style="width: 100%" @change="handleCategoryChange">
             <el-option v-for="opt in categoryOptions" :key="opt._id" :label="opt.name" :value="opt._id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="关联门店">
-          <el-select v-model="formData.storeId" placeholder="请选择门店" style="width: 100%" @change="handleStoreChange">
-            <el-option v-for="s in storeOptions" :key="s._id" :label="s.name" :value="s._id" />
           </el-select>
         </el-form-item>
         <el-form-item label="商品名称">

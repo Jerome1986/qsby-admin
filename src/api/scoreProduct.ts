@@ -61,8 +61,6 @@ export const deleteScoreCategory = (id: string) => {
 export interface ScoreProductListParams {
   name?: string
   categoryId?: string
-  /** 门店ID，传 'all' 或不传表示不限 */
-  storeId?: string
 }
 
 /** 获取商品列表 */
@@ -74,7 +72,6 @@ export const getScoreProductList = (
   const query: Record<string, string | number> = { pageNum, pageSize }
   if (params?.name?.trim()) query.name = params.name.trim()
   if (params?.categoryId && params.categoryId !== 'all') query.categoryId = params.categoryId
-  if (params?.storeId && params.storeId !== 'all') query.storeId = params.storeId
   return request<ScoreProductPage>({
     method: 'GET',
     url: '/scoreProduct/findAllList',
@@ -87,8 +84,6 @@ export interface ScoreProductAddParams {
   name: string
   category: string
   categoryName: string
-  storeId?: string
-  storeName?: string
   cover: string
   images: string[]
   scorePrice: number

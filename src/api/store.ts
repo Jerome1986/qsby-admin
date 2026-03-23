@@ -156,6 +156,35 @@ export const updateStoreContent = (storeId: string, type: string, blocks: StoreC
   })
 }
 
+// ======================== 门店预约须知 ========================
+
+/** 门店预约须知响应 */
+export interface StoreBookingNoteData {
+  storeId: string
+  items: { title: string; content: string[] }[]
+}
+
+/** 获取门店预约须知 */
+export const getStoreBookingNote = (storeId: string) => {
+  return request<StoreBookingNoteData>({
+    method: 'GET',
+    url: '/content/bookingNote',
+    params: { storeId },
+  })
+}
+
+/** 更新门店预约须知 */
+export const updateStoreBookingNote = (
+  storeId: string,
+  data: { items: { title: string; content: string[] }[] },
+) => {
+  return request({
+    method: 'POST',
+    url: '/content/updateBookingNote',
+    data: { storeId, ...data },
+  })
+}
+
 // ======================== 产品管理 ========================
 
 /** 产品列表搜索参数 */

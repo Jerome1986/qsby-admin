@@ -44,10 +44,6 @@ export interface ScoreProduct {
   categoryName: string
   /** 积分价格 */
   scorePrice: number
-  /** 关联门店ID */
-  storeId?: string
-  /** 门店名称 */
-  storeName?: string
   /** 商品状态 */
   status: 'active' | 'disabled'
   /** 创建时间 */

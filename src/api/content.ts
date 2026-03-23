@@ -1,7 +1,6 @@
 import { request } from '@/utils/request.ts'
 import type {
   BrandContent,
-  BookingNoteContent,
   RightsBenefitsItem,
   RightsType,
   TipsItem,
@@ -47,25 +46,6 @@ export const updateTipsItem = (type: TipsType, data: { title: string; items: str
     method: 'POST',
     url: '/content/updateTips',
     data: { type, ...data },
-  })
-}
-
-// ======================== 预约须知（独立表） ========================
-
-/** 获取预约须知 */
-export const getBookingNote = () => {
-  return request<BookingNoteContent>({
-    method: 'GET',
-    url: '/content/bookingNote',
-  })
-}
-
-/** 更新预约须知 */
-export const updateBookingNote = (data: { items: { title: string; content: string }[] }) => {
-  return request<AddResult>({
-    method: 'POST',
-    url: '/content/updateBookingNote',
-    data,
   })
 }
 
