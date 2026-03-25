@@ -129,6 +129,7 @@ import { HomeFilled, User, Flag, Location, Setting, List, Folder, Shop, Coin, Do
           <el-menu-item-group>
             <el-menu-item index="/system/city">城市管理</el-menu-item>
             <el-menu-item index="/system/admin">设置管理</el-menu-item>
+            <el-menu-item index="/system/group-chat">设置群聊</el-menu-item>
           </el-menu-item-group>
         </el-sub-menu>
       </el-menu>

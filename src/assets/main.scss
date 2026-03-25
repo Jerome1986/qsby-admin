@@ -19,3 +19,8 @@ image {
   margin-top: 16px;
   justify-content: flex-end;
 }
+
+// 图片预览挂在 body 后仍需高于表格 fixed 表头、布局等（避免预览被遮挡）
+.el-image-viewer__wrapper {
+  z-index: 5000 !important;
+}

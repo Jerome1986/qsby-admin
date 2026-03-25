@@ -105,6 +105,7 @@ const router = createRouter({
           children: [
             { path: 'city', component: () => import('@/views/system/CityManager.vue') },
             { path: 'admin', component: () => import('@/views/system/SetAdmin.vue') },
+            { path: 'group-chat', component: () => import('@/views/system/GroupChatSetting.vue') },
           ],
         },
       ],
